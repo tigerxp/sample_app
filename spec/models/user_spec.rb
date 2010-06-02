@@ -3,10 +3,10 @@ require 'spec_helper'
 describe User do
   before(:each) do
     @attr = {
-      :name => "John Doe",
-      :email => "john@doe.com",
-      :password => "topsecret",
-      :password_confirmation => "topsecret"
+      :name => "Test User",
+      :email => "test.user@example.com",
+      :password => "testpass",
+      :password_confirmation => "testpass"
     }
   end
 
@@ -111,25 +111,43 @@ describe User do
 
     end
 
-    describe "authenticate user" do
+  end
 
-      it "should return nil if there is no user with this e-mail" do
-        nonexistent_user = User.authenticate("wrongemail@foo.com", @attr[:password])
-        nonexistent_user.should be_nil
-      end
+  describe "authenticate user" do
 
-      it "should return nil if the password is wrong" do
-        wrong_pass_user = User.authenticate(@attr[:email], "wrongpass")
-        wrong_pass_user.should be_nil
-      end
+    it "should return nil if there is no user with this e-mail" do
+      nonexistent_user = User.authenticate("wrongemail@foo.com", @attr[:password])
+      nonexistent_user.should be_nil
+    end
 
-      it "should return user if e-mail and password match" do
-        correct_user = User.authenticate(@attr[:email], @attr[:password])
-        correct_user.should == @user
-      end
+    it "should return nil if the password is wrong" do
+      wrong_pass_user = User.authenticate(@attr[:email], "wrongpass")
+      wrong_pass_user.should be_nil
+    end
 
+    it "should return user if e-mail and password match" do
+      correct_user = User.authenticate(@attr[:email], @attr[:password])
+      correct_user.should == @user
     end
 
   end
+
+  describe "remember me" do
+
+    before(:each) do
+      @user = User.create(@attr)
+    end
+
+    it "should have a remember token" do
+      @user.should respond_to(:remember_me!)
+    end
+
+    it "should set the remember token" do
+      @user.remember_me!
+      @user.remember_token.should_not be_nil
+    end
+    
+  end
+
 end
 
